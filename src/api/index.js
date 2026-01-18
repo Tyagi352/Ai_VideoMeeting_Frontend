@@ -1,4 +1,4 @@
-export const API_URL = "https://ai-videomeeting-backend-vzb1.onrender.com";
+export const API_URL = import.meta.env.VITE_API_URL;
 ;
 
 export async function signup(name, email, password) {
@@ -54,10 +54,16 @@ export async function sendAudio(formData) {
       signal: controller.signal,
     });
     clearTimeout(timeout);
-    if (!res.ok) throw new Error(await res.text());
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({ message: res.statusText }));
+      throw new Error(errorData.message || `Server error: ${res.status}`);
+    }
     return res.json();
   } catch (err) {
     clearTimeout(timeout);
+    if (err.name === 'AbortError') {
+      throw new Error('Request timeout: Server took too long to process audio');
+    }
     throw err;
   }
 }

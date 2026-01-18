@@ -4,6 +4,8 @@ import { socket } from '../Socket/socket';
 import Peer from 'simple-peer';
 import { getUser, sendAudio } from '../api/index.js';
 import Toast from '../components/Toast.jsx';
+import RecordingIndicator from '../components/MeetingRoom/RecordingIndicator.jsx';
+import ControlBar from '../components/MeetingRoom/ControlBar.jsx';
 import { FiMic, FiStopCircle, FiPhoneOff, FiCopy, FiDownload, FiVideo } from 'react-icons/fi';
 
 export default function Room() {
@@ -243,23 +245,28 @@ export default function Room() {
 
     // If no audio chunks, redirect to dashboard
     if (audioChunksRef.current.length === 0) {
+      setToastMsg('No audio recorded');
       navigate('/dashboard');
       return;
     }
 
     // Create summary from audio
     const audioBlob = new Blob(audioChunksRef.current, { type: recordingMimeType });
+    console.log('Audio blob created:', { size: audioBlob.size, type: audioBlob.type });
+    
     const formData = new FormData();
     formData.append('audio', audioBlob, 'meeting.webm');
     formData.append('roomId', roomId);
     formData.append('participants', JSON.stringify([getUser()?.id]));
 
     setIsGenerating(true);
+    setToastMsg('Processing audio... this may take a minute');
     try {
       const response = await sendAudio(formData);
+      console.log('Summary response:', response);
       setAiSummary(response.summary || 'No summary returned');
       setTranscript(response.transcript || '');
-      if (response.audioUrl) setAudioUrl(`${BACKEND_URL}${response.audioUrl}`);
+      if (response.audioUrl) setAudioUrl(response.audioUrl);
       setToastMsg('Meeting summary generated!');
       
       // Redirect to dashboard after 2 seconds to show the summary
@@ -268,11 +275,12 @@ export default function Room() {
       }, 2000);
     } catch (err) {
       console.error('Error sending audio:', err);
-      setToastMsg('Failed to create summary, but redirecting to dashboard');
+      const errorMsg = err.message || 'Failed to create summary';
+      setToastMsg(`Error: ${errorMsg}. Redirecting...`);
       // Still redirect even if summary fails
       setTimeout(() => {
         navigate('/dashboard');
-      }, 1500);
+      }, 2500);
     } finally {
       setIsGenerating(false);
     }

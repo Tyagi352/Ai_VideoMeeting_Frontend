@@ -1,11 +1,18 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { login, getUser } from "../api/index.js";
 import { useNavigate, Link } from "react-router-dom";
 import Navbar from "../components/Navbar.jsx";
+import Card from "../components/Common/Card.jsx";
+import Input from "../components/Common/Input.jsx";
+import Button from "../components/Common/Button.jsx";
 
 export default function Login() {
   const nav = useNavigate();
   const currentUser = getUser();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (currentUser) {
@@ -13,113 +20,99 @@ export default function Login() {
     }
   }, [currentUser, nav]);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await login(email, password);
-    if (res.token) {
-      localStorage.setItem("token", res.token);
-      localStorage.setItem("user", JSON.stringify(res.user));
-      nav("/dashboard");
-    } else {
-      alert(res.message || "Login failed");
+    setError("");
+    setLoading(true);
+    
+    try {
+      const res = await login(email, password);
+      if (res.token) {
+        localStorage.setItem("token", res.token);
+        localStorage.setItem("user", JSON.stringify(res.user));
+        nav("/dashboard");
+      } else {
+        setError(res.message || "Login failed");
+      }
+    } catch (err) {
+      setError(err.message || "An error occurred");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-100 px-4">
+    <div className="min-h-screen bg-white">
+      <Navbar />
 
-      {/* Navbar fixed at top */}
-      <div className="fixed top-0 left-0 w-full z-50">
-        <Navbar />
-      </div>
-
-      {/* Push content below navbar */}
-      <div className="pt-20 flex items-center justify-center min-h-screen">
-
-        {/* Card */}
-        <div className="w-full max-w-md bg-white/80 backdrop-blur-xl p-8 rounded-2xl shadow-2xl border border-blue-100 animate-fadeIn">
-
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="text-5xl mb-3"></div>
-            <h2 className="text-3xl font-extrabold text-gray-900 mb-2">
-              Welcome Back
-            </h2>
-            <p className="text-gray-600 text-sm">
-              Login to access your AI-powered meetings and summaries
-            </p>
-          </div>
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-
+      <div className="pt-20 px-4 flex items-center justify-center min-h-screen">
+        <Card className="w-full max-w-md">
+          <div className="space-y-6">
+            {/* Header */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email Address
-              </label>
-              <input
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                Welcome Back
+              </h2>
+              <p className="text-gray-600">
+                Sign in to access your meetings and summaries
+              </p>
+            </div>
+
+            {/* Error Message */}
+            {error && (
+              <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                {error}
+              </div>
+            )}
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <Input
+                label="Email Address"
+                type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                type="email"
                 placeholder="you@example.com"
                 required
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               />
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
-              <input
+              <Input
+                label="Password"
+                type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                type="password"
-                placeholder="••••••••"
+                placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                 required
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               />
+
+              <Button 
+                type="submit" 
+                variant="primary" 
+                size="md" 
+                className="w-full"
+                disabled={loading}
+              >
+                {loading ? "Signing in..." : "Sign In"}
+              </Button>
+            </form>
+
+            {/* Sign Up Link */}
+            <div className="text-center text-sm">
+              <p className="text-gray-600">
+                Don't have an account?{" "}
+                <Link to="/signup" className="text-blue-600 font-semibold hover:underline">
+                  Create one
+                </Link>
+              </p>
             </div>
 
-            <button
-              type="submit"
-              className="mt-2 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold shadow-lg hover:scale-[1.02] transition-all"
-            >
-              Sign In
-            </button>
-
-            <p className="text-center text-sm text-gray-600 mt-2">
-              Don’t have an account?{" "}
-              <Link
-                to="/signup"
-                className="text-blue-600 font-semibold hover:underline"
-              >
-                Create one
-              </Link>
-            </p>
-          </form>
-
-          {/* Footer Info */}
-          <div className="mt-8 text-center text-xs text-gray-500">
-            Secure login · AI summaries · Private meetings
+            {/* Footer Info */}
+            <div className="text-center text-xs text-gray-500 border-t pt-4">
+              Secure login Â· AI summaries Â· Private meetings
+            </div>
           </div>
-        </div>
-
+        </Card>
       </div>
-
-      {/* Animations */}
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.7s ease-out both;
-        }
-      `}</style>
     </div>
   );
 }

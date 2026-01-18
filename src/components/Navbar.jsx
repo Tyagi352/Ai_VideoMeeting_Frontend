@@ -15,7 +15,7 @@ export default function Navbar() {
     <nav className="w-full bg-white shadow-sm py-3 px-6 flex justify-between items-center position-sticky-top top-0 z-50">
       <div className="flex items-center gap-4">
         <Link to="/" className="font-bold text-lg text-blue-600 flex items-center gap-2"><FiHome />NexaCall</Link>
-        <Link to="/dashboard" className="text-sm text-gray-600 hover:text-blue-600">Dashboard</Link>
+        {/* <Link to="/dashboard" className="text-sm text-gray-600 hover:text-blue-600">Dashboard</Link> */}
         {user && (
           <Link to="/history" className="text-sm text-gray-600 hover:text-blue-600 flex items-center gap-1">
             <FiClock className="text-lg" />
