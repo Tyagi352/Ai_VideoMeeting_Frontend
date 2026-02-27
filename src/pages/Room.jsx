@@ -28,6 +28,11 @@ export default function Room() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [recordingMimeType, setRecordingMimeType] = useState('audio/webm');
+  
+  // Waiting room state
+  const [isWaiting, setIsWaiting] = useState(false);
+  const [isHost, setIsHost] = useState(false);
+  const [waitingParticipants, setWaitingParticipants] = useState([]);
 
   const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -105,7 +110,9 @@ export default function Room() {
   };
 
   // --- Video Chat Setup ---
+  // --- Video Chat Setup ---
   useEffect(() => {
+    let isMounted = true;
     const user = getUser();
     if (!user) {
       navigate('/login');
@@ -116,6 +123,11 @@ export default function Room() {
 
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
       .then((stream) => {
+        if (!isMounted) {
+          stream.getTracks().forEach((track) => track.stop());
+          return;
+        }
+
         localVideoRef.current.srcObject = stream;
         localStream = stream;
         localStreamRef.current = stream;
@@ -124,10 +136,38 @@ export default function Room() {
         socket.emit('join-room', roomId, user.id);
         roomJoinedRef.current = true;
 
+        // Waiting room: participant was admitted
+        socket.on('participant-admitted', () => {
+          setIsWaiting(false);
+          setToastMsg('You have been admitted!');
+        });
+
+        // Waiting room: participant is waiting
+        socket.on('waiting-for-admission', () => {
+          setIsWaiting(true);
+          setIsHost(false);
+          setToastMsg('Waiting for host to admit you...');
+        });
+
+        // Waiting room: host notification of waiting participants
+        socket.on('participant-waiting', (data) => {
+          setIsHost(true);
+          setWaitingParticipants([...data.waitingList]);
+          setToastMsg(`Participant waiting: ${data.userId}`);
+        });
+
+        // Waiting room: updated waiting list
+        socket.on('waiting-list-updated', (data) => {
+          setWaitingParticipants([...data.waitingList]);
+        });
+
         // Existing users
         socket.on('all-users', (users) => {
           users.forEach((u) => {
             if (!u || !u.socketId) return;
+            // Prevent duplicate peers if all-users fires multiple times or for existing peers
+            if (peersRef.current[u.socketId]) return;
+            
             const peer = createPeer(u.socketId, socket.id, localStream);
             peersRef.current[u.socketId] = peer;
           });
@@ -136,6 +176,8 @@ export default function Room() {
         // New user joined
         socket.on('user-connected', (socketId) => {
           console.log('User connected:', socketId);
+          // Do not initiate connection here. Wait for the new user to initiate (send signal).
+          // The new user will receive 'all-users' and initiate connections.
         });
 
         // User disconnected
@@ -148,6 +190,10 @@ export default function Room() {
 
         // Signal handling
         socket.on('signal', ({ from, signal }) => {
+          if (isWaiting) {
+            console.log('Ignoring signal while waiting for admission');
+            return;
+          }
           if (!peersRef.current[from]) {
             const peer = addPeer(signal, from, localStream);
             peersRef.current[from] = peer;
@@ -163,10 +209,15 @@ export default function Room() {
 
         socket.on('connect_error', (err) => console.error('Socket connect error', err));
       })
-      .catch((err) => console.error('getUserMedia error:', err));
+      .catch((err) => {
+        if (isMounted) console.error('getUserMedia error:', err);
+      });
 
     return () => {
-      try { socket.emit('leave-room', roomId, getUser()?.id); } catch (e) {}
+      isMounted = false;
+      try { 
+        if (roomJoinedRef.current) socket.emit('leave-room', roomId, getUser()?.id); 
+      } catch (e) {}
 
       socket.off('all-users');
       socket.off('user-connected');
@@ -174,6 +225,10 @@ export default function Room() {
       socket.off('user-disconnected');
       socket.off('connect');
       socket.off('connect_error');
+      socket.off('waiting-for-admission');
+      socket.off('participant-admitted');
+      socket.off('participant-waiting');
+      socket.off('waiting-list-updated');
 
       if (localStream) localStream.getTracks().forEach((track) => track.stop());
       Object.keys(peersRef.current).forEach((k) => peersRef.current[k].destroy());
@@ -226,6 +281,12 @@ export default function Room() {
     return peer;
   };
 
+  // --- Waiting Room: Admit Participant ---
+  const admitParticipant = (socketId) => {
+    socket.emit('admit-participant', { roomId, socketId });
+    setToastMsg(`Admitted participant ${socketId.slice(0, 4)}`);
+  };
+
   // --- End Call ---
   const endCall = async () => {
     // Stop recording if active
@@ -272,7 +333,7 @@ export default function Room() {
       // Redirect to dashboard after 2 seconds to show the summary
       setTimeout(() => {
         navigate('/dashboard');
-      }, 2000);
+      }, 2000); 
     } catch (err) {
       console.error('Error sending audio:', err);
       const errorMsg = err.message || 'Failed to create summary';
@@ -308,42 +369,82 @@ export default function Room() {
       {/* Video Section */}
       <div className="flex-1 overflow-auto p-6">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-            {/* Local Video */}
-            <div className="lg:col-span-2">
-              <div className="relative bg-black rounded-xl overflow-hidden shadow-2xl h-96 lg:h-full">
-                <video ref={localVideoRef} autoPlay muted className="w-full h-full object-cover" />
-                <div className="absolute bottom-4 left-4 bg-black bg-opacity-70 px-3 py-2 rounded text-white text-sm font-medium">🎥 You</div>
+          {isWaiting ? (
+            // Waiting Room UI
+            <div className="flex flex-col items-center justify-center h-96 lg:h-96">
+              <div className="bg-gray-800 rounded-xl border-2 border-yellow-500 p-12 text-center max-w-md">
+                <div className="text-6xl mb-4 animate-pulse">⏳</div>
+                <h2 className="text-2xl font-bold text-white mb-2">Waiting for Admission</h2>
+                <p className="text-gray-300 mb-4">The host will admit you shortly. Your video and audio are ready.</p>
+                <div className="bg-gray-700 rounded p-3">
+                  <p className="text-gray-400 text-sm">Your camera and microphone are active and working properly.</p>
+                </div>
               </div>
             </div>
+          ) : (
+            // Normal Meeting UI
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+              {/* Local Video */}
+              <div className="lg:col-span-2">
+                <div className="relative bg-black rounded-xl overflow-hidden shadow-2xl h-96 lg:h-full">
+                  <video ref={localVideoRef} autoPlay muted className="w-full h-full object-cover" />
+                  <div className="absolute bottom-4 left-4 bg-black bg-opacity-70 px-3 py-2 rounded text-white text-sm font-medium">🎥 You</div>
+                </div>
+              </div>
 
-            {/* Remote Videos */}
-            <div className="lg:col-span-2">
-              {Object.keys(remoteVideosRef.current).length === 0 ? (
-                <div className="bg-gray-800 rounded-xl border border-gray-700 h-96 lg:h-full flex flex-col items-center justify-center p-6">
-                  <div className="text-5xl mb-4">👥</div>
-                  <p className="text-gray-300 text-center font-medium mb-2">Waiting for participants...</p>
-                  <p className="text-gray-500 text-sm text-center">Share your Room ID with others to join this meeting</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 gap-4 h-96 lg:h-full">
-                  {Object.keys(remoteVideosRef.current).map((id) => (
-                    <div key={id} className="relative bg-black rounded-xl overflow-hidden shadow-lg">
-                      <video
-                        autoPlay
-                        playsInline
-                        className="w-full h-full object-cover"
-                        ref={(el) => el && (el.srcObject = remoteVideosRef.current[id])}
-                      />
-                      <div className="absolute bottom-3 left-3 bg-black bg-opacity-70 px-3 py-1 rounded text-white text-xs font-medium">👤 Participant {id.slice(0, 4)}</div>
-                    </div>
-                  ))}
-                </div>
-              )}
+              {/* Remote Videos */}
+              <div className="lg:col-span-2">
+                {Object.keys(remoteVideosRef.current).length === 0 ? (
+                  <div className="bg-gray-800 rounded-xl border border-gray-700 h-96 lg:h-full flex flex-col items-center justify-center p-6">
+                    <div className="text-5xl mb-4">👥</div>
+                    <p className="text-gray-300 text-center font-medium mb-2">Waiting for participants...</p>
+                    <p className="text-gray-500 text-sm text-center">Share your Room ID with others to join this meeting</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 gap-4 h-96 lg:h-full">
+                    {Object.keys(remoteVideosRef.current).map((id) => (
+                      <div key={id} className="relative bg-black rounded-xl overflow-hidden shadow-lg">
+                        <video
+                          autoPlay
+                          playsInline
+                          className="w-full h-full object-cover"
+                          ref={(el) => el && (el.srcObject = remoteVideosRef.current[id])}
+                        />
+                        <div className="absolute bottom-3 left-3 bg-black bg-opacity-70 px-3 py-1 rounded text-white text-xs font-medium">👤 Participant {id.slice(0, 4)}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Host Admission Panel */}
+      {isHost && waitingParticipants.length > 0 && (
+        <div className="bg-yellow-900 border-t border-yellow-700 px-6 py-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <h3 className="text-white font-semibold">{waitingParticipants.length} Participant{waitingParticipants.length !== 1 ? 's' : ''} Waiting</h3>
+                <p className="text-yellow-100 text-sm">Review and admit participants to join the meeting</p>
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                {waitingParticipants.map((socketId) => (
+                  <button
+                    key={socketId}
+                    onClick={() => admitParticipant(socketId)}
+                    className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm font-medium transition"
+                  >
+                    Admit {socketId.slice(0, 4)}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Controls & End Call */}
       <div className="max-w-7xl mx-auto p-6 flex flex-col md:flex-row gap-4 items-center">

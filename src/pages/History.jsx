@@ -21,8 +21,17 @@ export default function History() {
       return;
     }
     const load = async () => {
-      const data = await fetchSummaries();
-      setSummaries(data || []);
+      try {
+        const data = await fetchSummaries();
+        setSummaries(data || []);
+      } catch (err) {
+        console.error("Failed to load summaries:", err);
+        if (err.message.includes("401") || err.message.includes("Token is invalid")) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            nav("/login");
+        }
+      }
     };
     load();
   }, [user, nav]);
