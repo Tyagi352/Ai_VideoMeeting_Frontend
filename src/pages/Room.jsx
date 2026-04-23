@@ -34,7 +34,7 @@ export default function Room() {
   const [isHost, setIsHost] = useState(false);
   const [waitingParticipants, setWaitingParticipants] = useState([]);
 
-  const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const BACKEND_URL = import.meta.env.VITE_API_URL;
 
   // Force update
   const [, setTick] = useState(0);
