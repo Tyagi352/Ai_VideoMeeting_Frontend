@@ -34,7 +34,7 @@ export default function Room() {
   const [isHost, setIsHost] = useState(false);
   const [waitingParticipants, setWaitingParticipants] = useState([]);
 
-  const BACKEND_URL = import.meta.env.VITE_API_URL;
+  const BACKEND_URL = "https://ai-video-meeting-backend-1jo9.vercel.app";
 
   // Force update
   const [, setTick] = useState(0);

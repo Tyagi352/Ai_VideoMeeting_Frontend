@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client';
 
-const URL = import.meta.env.VITE_API_URL;
+const URL = "https://ai-video-meeting-backend-1jo9.vercel.app";
 export const socket = io(URL, {
   autoConnect: true,
   reconnection: true,

@@ -1,4 +1,4 @@
-export const API_URL = import.meta.env.VITE_API_URL || "https://ai-video-meeting-backend-1jo9.vercel.app";
+export const API_URL = "https://ai-video-meeting-backend-1jo9.vercel.app";
 
 export async function signup(name, email, password) {
   const res = await fetch(`${API_URL}/api/auth/signup`, {
