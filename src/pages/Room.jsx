@@ -28,7 +28,7 @@ export default function Room() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [recordingMimeType, setRecordingMimeType] = useState('audio/webm');
-  
+
   // Waiting room state
   const [isWaiting, setIsWaiting] = useState(false);
   const [isHost, setIsHost] = useState(false);
@@ -167,7 +167,7 @@ export default function Room() {
             if (!u || !u.socketId) return;
             // Prevent duplicate peers if all-users fires multiple times or for existing peers
             if (peersRef.current[u.socketId]) return;
-            
+
             const peer = createPeer(u.socketId, socket.id, localStream);
             peersRef.current[u.socketId] = peer;
           });
@@ -215,9 +215,9 @@ export default function Room() {
 
     return () => {
       isMounted = false;
-      try { 
-        if (roomJoinedRef.current) socket.emit('leave-room', roomId, getUser()?.id); 
-      } catch (e) {}
+      try {
+        if (roomJoinedRef.current) socket.emit('leave-room', roomId, getUser()?.id);
+      } catch (e) { }
 
       socket.off('all-users');
       socket.off('user-connected');
@@ -314,7 +314,7 @@ export default function Room() {
     // Create summary from audio
     const audioBlob = new Blob(audioChunksRef.current, { type: recordingMimeType });
     console.log('Audio blob created:', { size: audioBlob.size, type: audioBlob.type });
-    
+
     const formData = new FormData();
     formData.append('audio', audioBlob, 'meeting.webm');
     formData.append('roomId', roomId);
@@ -329,11 +329,11 @@ export default function Room() {
       setTranscript(response.transcript || '');
       if (response.audioUrl) setAudioUrl(response.audioUrl);
       setToastMsg('Meeting summary generated!');
-      
+
       // Redirect to dashboard after 2 seconds to show the summary
       setTimeout(() => {
         navigate('/dashboard');
-      }, 2000); 
+      }, 2000);
     } catch (err) {
       console.error('Error sending audio:', err);
       const errorMsg = err.message || 'Failed to create summary';
@@ -477,8 +477,8 @@ export default function Room() {
           </button>
         </div>
 
-        <button 
-          onClick={endCall}  
+        <button
+          onClick={endCall}
           className="bg-red-600 text-white px-4 py-2 cursor-pointer rounded flex items-center gap-2">
           <FiPhoneOff /> End Call
         </button>

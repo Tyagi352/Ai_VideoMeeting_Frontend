@@ -1,33 +1,88 @@
 // QuickStats.jsx - Dashboard Stats
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FiTrendingUp, FiCheckCircle, FiClock, FiUsers } from 'react-icons/fi';
 import Card from '../Common/Card';
+import { fetchSummaries } from '../../api/index.js';
 
 export default function QuickStats() {
+  const [totalMeetings, setTotalMeetings] = useState(0);
+  const [totalSummaries, setTotalSummaries] = useState(0);
+  const [hoursSaved, setHoursSaved] = useState('0h');
+  const [teamMembers, setTeamMembers] = useState(0);
+  const [weekMeetings, setWeekMeetings] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        const summaries = await fetchSummaries();
+        if (!Array.isArray(summaries)) {
+          setLoading(false);
+          return;
+        }
+
+        // Total summaries generated
+        setTotalSummaries(summaries.length);
+
+        // Total unique meetings (by roomId)
+        const uniqueRooms = new Set(summaries.map((s) => s.roomId));
+        setTotalMeetings(uniqueRooms.size);
+
+        // Meetings this week
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        const thisWeek = summaries.filter(
+          (s) => new Date(s.createdAt) >= oneWeekAgo
+        );
+        setWeekMeetings(thisWeek.length);
+
+        // Estimated hours saved (approx 0.5h per summary)
+        const saved = (summaries.length * 0.5).toFixed(1);
+        setHoursSaved(`${saved}h`);
+
+        // Unique team members across all meetings
+        const memberSet = new Set();
+        summaries.forEach((s) => {
+          if (Array.isArray(s.participants)) {
+            s.participants.forEach((p) => memberSet.add(typeof p === 'object' ? p._id : p));
+          }
+        });
+        setTeamMembers(memberSet.size);
+      } catch (err) {
+        console.error('Failed to load stats:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadStats();
+  }, []);
+
   const stats = [
     {
       icon: FiTrendingUp,
       label: 'Total Meetings',
-      value: '24',
-      change: '+3 this week',
+      value: loading ? '—' : String(totalMeetings),
+      change: loading ? '' : `+${weekMeetings} this week`,
     },
     {
       icon: FiCheckCircle,
       label: 'Summaries Generated',
-      value: '18',
-      change: '75% completion',
+      value: loading ? '—' : String(totalSummaries),
+      change: loading ? '' : totalMeetings > 0
+        ? `${Math.round((totalSummaries / totalMeetings) * 100)}% completion`
+        : '0% completion',
     },
     {
       icon: FiClock,
       label: 'Hours Saved',
-      value: '12.5h',
+      value: loading ? '—' : hoursSaved,
       change: 'est. by AI',
     },
     {
       icon: FiUsers,
       label: 'Team Members',
-      value: '8',
-      change: 'active today',
+      value: loading ? '—' : String(teamMembers),
+      change: 'across all meetings',
     },
   ];
 
