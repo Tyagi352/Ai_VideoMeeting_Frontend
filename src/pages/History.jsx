@@ -27,9 +27,9 @@ export default function History() {
       } catch (err) {
         console.error("Failed to load summaries:", err);
         if (err.message.includes("401") || err.message.includes("Token is invalid")) {
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            nav("/login");
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          nav("/login");
         }
       }
     };
@@ -40,7 +40,7 @@ export default function History() {
     if (!window.confirm("Are you sure you want to delete this meeting summary?")) {
       return;
     }
-    
+
     try {
       setDeleting(id);
       await deleteSummary(id);
@@ -112,6 +112,43 @@ export default function History() {
                         <p className="text-gray-700 line-clamp-3">
                           {s.summary}
                         </p>
+
+                        {/* Key Points */}
+                        {s.keyPoints && s.keyPoints.length > 0 && (
+                          <div className="mt-3">
+                            <h4 className="text-sm font-semibold text-gray-700 mb-2">Key Points</h4>
+                            <ul className="list-disc list-inside space-y-1">
+                              {s.keyPoints.map((point, i) => (
+                                <li key={i} className="text-sm text-gray-600">{point}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {/* Action Items */}
+                        {s.actionItems && s.actionItems.length > 0 && (
+                          <div className="mt-3">
+                            <h4 className="text-sm font-semibold text-gray-700 mb-2">Action Items</h4>
+                            <ul className="space-y-2">
+                              {s.actionItems.map((item, i) => (
+                                <li key={i} className="text-sm bg-amber-50 border border-amber-200 rounded p-2">
+                                  <span className="font-medium text-gray-800">{item.task}</span>
+                                  <div className="text-xs text-gray-500 mt-1">
+                                    {item.speaker && <span className="font-semibold">{item.speaker}</span>}
+                                    {item.context && <span> — {item.context}</span>}
+                                  </div>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {/* Partial warning */}
+                        {s.partial && (
+                          <p className="text-xs text-orange-500 italic">
+                            ⚠️ This summary was only partially generated.
+                          </p>
+                        )}
                       </div>
 
                       <div className="text-center">

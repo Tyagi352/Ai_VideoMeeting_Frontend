@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { FiTrendingUp, FiCheckCircle, FiClock, FiUsers } from 'react-icons/fi';
 import Card from '../Common/Card';
-import { fetchSummaries } from '../../api/index.js';
+import { fetchSummaries, logout } from '../../api/index.js';
+import { useNavigate } from 'react-router-dom';
 
 export default function QuickStats() {
   const [totalMeetings, setTotalMeetings] = useState(0);
@@ -11,11 +12,20 @@ export default function QuickStats() {
   const [teamMembers, setTeamMembers] = useState(0);
   const [weekMeetings, setWeekMeetings] = useState(0);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function loadStats() {
       try {
         const summaries = await fetchSummaries();
+
+        // fetchSummaries throws on non-OK — but double-check for auth errors in body
+        if (summaries && summaries.message && summaries.message.toLowerCase().includes('token')) {
+          logout();
+          navigate('/login');
+          return;
+        }
+
         if (!Array.isArray(summaries)) {
           setLoading(false);
           return;
@@ -48,14 +58,23 @@ export default function QuickStats() {
           }
         });
         setTeamMembers(memberSet.size);
+
       } catch (err) {
+        // If it's an auth error, clear session and redirect to login
+        const msg = err.message || '';
+        if (msg.includes('Token') || msg.includes('401') || msg.includes('Unauthorized')) {
+          console.warn('[QuickStats] Auth error — clearing session and redirecting to login');
+          logout();
+          navigate('/login');
+          return;
+        }
         console.error('Failed to load stats:', err);
       } finally {
         setLoading(false);
       }
     }
     loadStats();
-  }, []);
+  }, [navigate]);
 
   const stats = [
     {
