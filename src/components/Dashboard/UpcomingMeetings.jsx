@@ -34,7 +34,7 @@ export default function UpcomingMeetings({ meetings = [] }) {
   return (
     <section className="space-y-4">
       <h2 className="text-2xl font-bold text-gray-900">Upcoming Meetings</h2>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {sampleMeetings.map((meeting) => (
           <Card key={meeting.id} hoverable className="space-y-4">

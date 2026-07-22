@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar.jsx";
 import Sidebar from "../components/Layout/Sidebar.jsx";
 import Button from "../components/Common/Button.jsx";
 import Card from "../components/Common/Card.jsx";
+import Input from "../components/Common/Input.jsx";
 import { FiPlus, FiVideo, FiLink } from "react-icons/fi";
 
 export default function Meet() {
@@ -46,7 +47,7 @@ export default function Meet() {
 
       <main className="lg:ml-64 pt-20 pb-12 px-4 md:px-8">
         <div className="max-w-6xl mx-auto space-y-8">
-          
+
           {/* Header */}
           <div className="pt-6">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
@@ -59,7 +60,7 @@ export default function Meet() {
 
           {/* Main Content */}
           <div className="grid md:grid-cols-2 gap-8">
-            
+
             {/* Create New Room */}
             <Card className="bg-linear-to-br from-blue-50 to-blue-100 border-2 border-blue-300 h-full">
               <div className="space-y-6 h-full flex flex-col justify-between">
@@ -77,9 +78,9 @@ export default function Meet() {
                   </div>
                 </div>
 
-                <Button 
-                  variant="primary" 
-                  size="lg" 
+                <Button
+                  variant="primary"
+                  size="lg"
                   onClick={createRandom}
                   className="w-full flex items-center justify-center gap-2"
                 >
@@ -111,18 +112,19 @@ export default function Meet() {
                     <label className="block text-sm font-medium text-gray-900">
                       Room ID
                     </label>
-                    <input
+                    <Input
                       type="text"
+                      label=""
                       value={roomInput}
                       onChange={(e) => setRoomInput(e.target.value)}
                       onKeyPress={handleKeyPress}
                       placeholder="Enter Room ID (e.g., abc1234)"
-                      className="w-full px-4 py-3 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition text-gray-900 placeholder-gray-500"
+                      className="border-violet-400/20"
                     />
                   </div>
-                  <Button 
-                    variant="primary" 
-                    size="lg" 
+                  <Button
+                    variant="primary"
+                    size="lg"
                     onClick={joinRoom}
                     className="w-full"
                   >

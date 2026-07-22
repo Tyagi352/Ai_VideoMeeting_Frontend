@@ -36,7 +36,7 @@ export default function Settings() {
 
       <main className="lg:ml-64 pt-20 pb-12 px-4 md:px-8">
         <div className="max-w-4xl mx-auto space-y-8">
-          
+
           {/* Header */}
           <div className="pt-6">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
@@ -107,7 +107,7 @@ export default function Settings() {
             </h2>
 
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="nc-panel flex items-center justify-between p-5">
                 <div>
                   <p className="font-medium text-gray-900">Password</p>
                   <p className="text-sm text-gray-600">Manage your account password</p>
@@ -117,7 +117,7 @@ export default function Settings() {
                 </Button>
               </div>
 
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="nc-panel flex items-center justify-between p-5">
                 <div>
                   <p className="font-medium text-gray-900">Two-Factor Authentication</p>
                   <p className="text-sm text-gray-600">Add extra security to your account</p>
@@ -142,9 +142,9 @@ export default function Settings() {
                   <p className="font-medium text-gray-900">Email Notifications</p>
                   <p className="text-sm text-gray-600">Receive updates about your meetings</p>
                 </div>
-                <input 
-                  type="checkbox" 
-                  defaultChecked 
+                <input
+                  type="checkbox"
+                  defaultChecked
                   disabled
                   className="w-5 h-5 text-blue-600"
                 />
@@ -155,9 +155,9 @@ export default function Settings() {
                   <p className="font-medium text-gray-900">Meeting Reminders</p>
                   <p className="text-sm text-gray-600">Get reminded before your scheduled meetings</p>
                 </div>
-                <input 
-                  type="checkbox" 
-                  defaultChecked 
+                <input
+                  type="checkbox"
+                  defaultChecked
                   disabled
                   className="w-5 h-5 text-blue-600"
                 />
@@ -177,8 +177,8 @@ export default function Settings() {
                   Sign out of your account and end your session
                 </p>
               </div>
-              <Button 
-                variant="danger" 
+              <Button
+                variant="danger"
                 size="lg"
                 onClick={handleLogout}
               >

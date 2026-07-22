@@ -12,8 +12,8 @@ export default function Button({
   onClick,
   ...props
 }) {
-  const baseClasses = 'font-medium rounded-md transition duration-300 ease-in-out flex items-center justify-center gap-2';
-  
+  const baseClasses = 'font-medium rounded-[16px] transition duration-200 ease-out flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-violet-400/40 focus:ring-offset-2 focus:ring-offset-[#09090B] active:scale-[0.98]';
+
   const sizeClasses = {
     sm: 'px-3 py-2 text-sm',
     md: 'px-4 py-2.5 text-base',
@@ -21,13 +21,14 @@ export default function Button({
   };
 
   const variantClasses = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
-    secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200 active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2',
-    ghost: 'text-blue-600 hover:bg-blue-50 active:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500',
-    danger: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2',
+    primary: 'bg-violet-500 text-white hover:bg-violet-600 shadow-lg shadow-violet-950/30',
+    secondary: 'bg-[#18181B] text-zinc-100 border border-white/10 hover:bg-[#27272A]',
+    ghost: 'text-violet-300 hover:bg-violet-400/10',
+    danger: 'bg-red-500 text-white hover:bg-red-600',
+    light: 'bg-white text-zinc-950 hover:bg-zinc-200',
   };
 
-  const disabledClasses = disabled || loading ? 'opacity-60 cursor-not-allowed' : '';
+  const disabledClasses = disabled || loading ? 'opacity-50 cursor-not-allowed saturate-50' : 'hover:-translate-y-px';
   const widthClasses = fullWidth ? 'w-full' : '';
 
   return (

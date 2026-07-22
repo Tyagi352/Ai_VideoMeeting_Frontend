@@ -10,7 +10,7 @@ export default function Toast({ message, onClose, duration = 3000 }) {
   if (!message) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 bg-white border rounded shadow-lg px-4 py-2 text-sm z-50">
+    <div className="nc-card fixed bottom-6 right-6 z-50 px-5 py-3 text-sm">
       {message}
     </div>
   );

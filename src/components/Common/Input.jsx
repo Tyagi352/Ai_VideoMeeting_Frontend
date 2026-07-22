@@ -16,7 +16,7 @@ export default function Input({
   return (
     <div className="w-full">
       {label && (
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-zinc-300 mb-2">
           {label}
         </label>
       )}
@@ -26,15 +26,16 @@ export default function Input({
         value={value}
         onChange={onChange}
         disabled={disabled}
-        className={`w-full px-3 py-2.5 rounded-md border transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-          error
+        aria-invalid={error || undefined}
+        aria-describedby={helperText ? `${label.replace(/\s+/g, '-').toLowerCase()}-help` : undefined}
+        className={`w-full px-4 py-3 rounded-[16px] border bg-[#18181B] text-zinc-100 transition duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-violet-400/30 ${error
             ? 'border-red-500 focus:ring-red-500'
-            : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
-        } ${disabled ? 'bg-gray-50 cursor-not-allowed' : 'bg-white'} ${className}`}
+            : 'border-white/10 focus:border-violet-400'
+          } ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
         {...props}
       />
       {helperText && (
-        <p className={`mt-1 text-sm ${error ? 'text-red-600' : 'text-gray-500'}`}>
+        <p id={label ? `${label.replace(/\s+/g, '-').toLowerCase()}-help` : undefined} className={`mt-2 text-sm ${error ? 'text-red-400' : 'text-zinc-500'}`}>
           {helperText}
         </p>
       )}

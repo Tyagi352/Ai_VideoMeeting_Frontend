@@ -167,7 +167,7 @@ export default function History() {
                         <summary className="cursor-pointer font-semibold text-gray-700 hover:text-blue-600 transition">
                           View Transcript
                         </summary>
-                        <div className="mt-3 p-3 bg-gray-50 rounded text-gray-700 text-sm">
+                        <div className="nc-panel mt-3 p-4 text-sm text-zinc-300">
                           {s.transcript}
                         </div>
                       </details>

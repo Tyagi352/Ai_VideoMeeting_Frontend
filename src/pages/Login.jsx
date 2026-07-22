@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { login, getUser } from "../api/index.js";
 import { useNavigate, Link } from "react-router-dom";
 import Navbar from "../components/Navbar.jsx";
@@ -24,7 +24,7 @@ export default function Login() {
     e.preventDefault();
     setError("");
     setLoading(true);
-    
+
     try {
       const res = await login(email, password);
       if (res.token) {
@@ -66,7 +66,7 @@ export default function Login() {
             )}
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-5">
               <Input
                 label="Email Address"
                 type="email"
@@ -85,10 +85,10 @@ export default function Login() {
                 required
               />
 
-              <Button 
-                type="submit" 
-                variant="primary" 
-                size="md" 
+              <Button
+                type="submit"
+                variant="primary"
+                size="md"
                 className="w-full"
                 disabled={loading}
               >

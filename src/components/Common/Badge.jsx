@@ -13,11 +13,11 @@ export default function Badge({
   };
 
   const variantClasses = {
-    default: 'bg-gray-100 text-gray-800',
-    success: 'bg-green-100 text-green-800',
-    warning: 'bg-yellow-100 text-yellow-800',
-    error: 'bg-red-100 text-red-800',
-    recording: 'bg-red-100 text-red-800 animate-pulse',
+    default: 'bg-white/10 text-zinc-300 border border-white/10',
+    success: 'bg-emerald-400/10 text-emerald-300 border border-emerald-400/20',
+    warning: 'bg-amber-400/10 text-amber-300 border border-amber-400/20',
+    error: 'bg-red-400/10 text-red-300 border border-red-400/20',
+    recording: 'bg-red-400/10 text-red-300 border border-red-400/20 animate-pulse',
   };
 
   return (

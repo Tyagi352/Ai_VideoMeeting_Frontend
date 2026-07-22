@@ -28,15 +28,16 @@ export default function LoginForm({ onSubmit }) {
   };
 
   return (
-    <Card className="w-full max-w-md space-y-6">
+    <Card className="w-full max-w-md space-y-7">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
-        <p className="text-gray-600 mt-1">Sign in to your account to continue</p>
+        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">NexaCall account</p>
+        <h2 className="text-2xl font-semibold tracking-tight text-gray-900">Welcome back</h2>
+        <p className="mt-2 text-sm text-gray-600">Sign in to your account to continue</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
         {error && (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+          <div className="rounded-[14px] border border-red-400/20 bg-red-400/10 p-4" role="alert">
             <p className="text-sm text-red-700">{error}</p>
           </div>
         )}
@@ -74,7 +75,7 @@ export default function LoginForm({ onSubmit }) {
           Don't have an account?{' '}
           <button
             onClick={() => navigate('/signup')}
-            className="text-blue-600 hover:text-blue-700 font-medium"
+            className="font-medium text-violet-300 hover:text-violet-200"
           >
             Create one
           </button>

@@ -22,7 +22,7 @@ export default function Avatar({
 
   return (
     <div
-      className={`${sizeClasses[size]} rounded-full bg-linear-to-br from-blue-400 to-blue-600 text-white font-semibold flex items-center justify-center overflow-hidden ${className}`}
+      className={`${sizeClasses[size]} rounded-full bg-linear-to-br from-violet-400 to-violet-600 text-white font-semibold flex items-center justify-center overflow-hidden ring-1 ring-white/15 ${className}`}
       title={name}
     >
       {src ? (

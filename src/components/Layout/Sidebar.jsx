@@ -1,7 +1,7 @@
 // Sidebar.jsx - Dashboard Sidebar Navigation
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FiHome, FiVideo, FiClock, FiSettings, FiLogOut, FiX } from 'react-icons/fi';
+import { Clock3, House, Settings, Video, X } from 'lucide-react';
 import Avatar from '../Common/Avatar';
 
 export default function Sidebar({ isOpen, onClose }) {
@@ -10,10 +10,10 @@ export default function Sidebar({ isOpen, onClose }) {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
 
   const navItems = [
-    { icon: FiHome, label: 'Home', path: '/dashboard' },
-    { icon: FiVideo, label: 'Meet', path: '/meet' },
-    { icon: FiClock, label: 'History', path: '/history' },
-    { icon: FiSettings, label: 'Settings', path: '/settings' },
+    { icon: House, label: 'Home', path: '/dashboard' },
+    { icon: Video, label: 'Meet', path: '/meet' },
+    { icon: Clock3, label: 'History', path: '/history' },
+    { icon: Settings, label: 'Settings', path: '/settings' },
   ];
 
   const isActive = (path) => location.pathname === path;
@@ -27,43 +27,46 @@ export default function Sidebar({ isOpen, onClose }) {
   if (isOpen) {
     return (
       <>
-        <div 
+        <div
           className="fixed inset-0 bg-black/30 z-40 lg:hidden"
           onClick={onClose}
         />
-        <div className="fixed left-0 top-0 w-64 h-screen bg-white border-r border-gray-200 flex flex-col z-50 shadow-lg">
-          <div className="flex justify-between items-center px-4 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-bold text-gray-900">Menu</h2>
-            <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded">
-              <FiX className="w-5 h-5" />
+        <div className="fixed inset-x-4 top-4 z-50 flex h-[calc(100vh-2rem)] max-w-72 flex-col rounded-[22px] border border-white/10 bg-[#111113]/95 shadow-[0_24px_70px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:left-6 sm:right-auto sm:w-72">
+          <div className="flex items-center justify-between border-b border-white/10 px-5 py-5">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-violet-400/15 text-violet-300 ring-1 ring-violet-300/20">N</span>
+              <h2 className="text-sm font-semibold tracking-tight text-zinc-100">Workspace</h2>
+            </div>
+            <button onClick={onClose} aria-label="Close menu" className="rounded-[10px] p-2 text-zinc-500 hover:bg-white/10 hover:text-zinc-200">
+              <X size={18} />
             </button>
           </div>
 
           {/* Main Navigation */}
-          <nav className="flex-1 px-4 py-6 space-y-2">
+          <nav className="flex-1 space-y-1.5 px-3 py-5">
             {navItems.map((item) => (
               <button
                 key={item.path}
                 onClick={() => handleNavClick(item.path)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition ${
-                  isActive(item.path)
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'text-gray-600 hover:bg-gray-100'
-                }`}
+                className={`group relative flex w-full items-center gap-3 rounded-[14px] px-3.5 py-3 text-sm font-medium transition duration-200 ${isActive(item.path)
+                    ? 'bg-violet-400/12 text-violet-200 shadow-[inset_0_0_0_1px_rgba(167,139,250,0.16)]'
+                    : 'text-zinc-500 hover:bg-white/[0.045] hover:text-zinc-100'
+                  }`}
               >
-                <item.icon className="w-5 h-5" />
+                {isActive(item.path) && <span className="absolute -left-3 h-5 w-0.5 rounded-full bg-violet-400" />}
+                <item.icon size={18} strokeWidth={isActive(item.path) ? 2.2 : 1.8} className="transition-transform duration-200 group-hover:scale-105" />
                 <span>{item.label}</span>
               </button>
             ))}
           </nav>
 
           {/* User Profile Section */}
-          <div className="px-4 py-4 border-t border-gray-200 space-y-3">
-            <div className="flex items-center gap-3">
+          <div className="space-y-3 border-t border-white/10 p-4">
+            <div className="flex items-center gap-3 rounded-[14px] bg-white/[0.035] p-2.5">
               <Avatar name={user.name || 'User'} size="md" />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">{user.name}</p>
-                <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                <p className="text-sm font-medium text-zinc-100 truncate">{user.name}</p>
+                <p className="text-xs text-zinc-500 truncate">{user.email}</p>
               </div>
             </div>
           </div>
@@ -74,32 +77,32 @@ export default function Sidebar({ isOpen, onClose }) {
 
   // Desktop sidebar
   return (
-    <div className="hidden lg:flex fixed left-0 top-16 w-64 h-[calc(100vh-4rem)] bg-white border-r border-gray-200 flex-col">
+    <div className="fixed left-4 top-24 z-40 hidden h-[calc(100vh-7rem)] w-60 flex-col rounded-[22px] border border-white/10 bg-[#111113]/90 shadow-[0_18px_55px_rgba(0,0,0,0.28)] backdrop-blur-2xl lg:flex xl:left-6">
       {/* Main Navigation */}
-      <nav className="flex-1 px-4 py-6 space-y-2">
+      <nav className="flex-1 space-y-1.5 px-3 py-5">
         {navItems.map((item) => (
           <button
             key={item.path}
             onClick={() => handleNavClick(item.path)}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition ${
-              isActive(item.path)
-                ? 'bg-blue-100 text-blue-700'
-                : 'text-gray-600 hover:bg-gray-100'
-            }`}
+            className={`group relative flex w-full items-center gap-3 rounded-[14px] px-3.5 py-3 text-sm font-medium transition duration-200 ${isActive(item.path)
+                ? 'bg-violet-400/12 text-violet-200 shadow-[inset_0_0_0_1px_rgba(167,139,250,0.16)]'
+                : 'text-zinc-500 hover:bg-white/[0.045] hover:text-zinc-100'
+              }`}
           >
-            <item.icon className="w-5 h-5" />
+            {isActive(item.path) && <span className="absolute -left-3 h-5 w-0.5 rounded-full bg-violet-400" />}
+            <item.icon size={18} strokeWidth={isActive(item.path) ? 2.2 : 1.8} className="transition-transform duration-200 group-hover:scale-105" />
             <span>{item.label}</span>
           </button>
         ))}
       </nav>
 
       {/* User Profile Section */}
-      <div className="px-4 py-4 border-t border-gray-200 space-y-3">
-        <div className="flex items-center gap-3">
+      <div className="space-y-3 border-t border-white/10 p-4">
+        <div className="flex items-center gap-3 rounded-[14px] bg-white/[0.035] p-2.5">
           <Avatar name={user.name || 'User'} size="md" />
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">{user.name}</p>
-            <p className="text-xs text-gray-500 truncate">{user.email}</p>
+            <p className="text-sm font-medium text-zinc-100 truncate">{user.name}</p>
+            <p className="text-xs text-zinc-500 truncate">{user.email}</p>
           </div>
         </div>
       </div>

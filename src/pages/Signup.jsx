@@ -26,7 +26,7 @@ export default function Signup() {
     e.preventDefault();
     setError("");
     setLoading(true);
-    
+
     try {
       const res = await signup(name, email, password);
       if (res.token) {
@@ -68,7 +68,7 @@ export default function Signup() {
             )}
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-5">
               <Input
                 label="Full Name"
                 type="text"
@@ -96,10 +96,10 @@ export default function Signup() {
                 required
               />
 
-              <Button 
-                type="submit" 
-                variant="primary" 
-                size="md" 
+              <Button
+                type="submit"
+                variant="primary"
+                size="md"
                 className="w-full"
                 disabled={loading}
               >

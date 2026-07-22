@@ -10,9 +10,9 @@ export default function Card({
   onClick,
   ...props
 }) {
-  const baseClasses = 'bg-white rounded-lg border border-gray-200';
-  const paddingClasses = padded ? 'p-6' : '';
-  const hoverClasses = hoverable ? 'hover:shadow-lg hover:border-gray-300 transition duration-300 ease-in-out' : '';
+  const baseClasses = 'nc-card bg-[#111113] rounded-[20px] border border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.18)]';
+  const paddingClasses = padded ? 'p-7' : '';
+  const hoverClasses = hoverable ? 'hover:shadow-[0_18px_50px_rgba(0,0,0,0.3)] hover:border-white/20 transition duration-200 ease-out' : '';
   const cursorClasses = clickable ? 'cursor-pointer' : '';
 
   return (

@@ -1,16 +1,16 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { getUser } from "../api/index.js";
 import Navbar from "../components/Navbar.jsx";
-import HeroSection from "../components/Hero/HeroSection.jsx";
-import FeaturesSection from "../components/Hero/FeaturesSection.jsx";
-import HowItWorks from "../components/Hero/HowItWorks.jsx";
-import Testimonials from "../components/Hero/Testimonials.jsx";
-import CTASection from "../components/Hero/CTASection.jsx";
-import Footer from "../components/Layout/Footer.jsx";
+import { motion } from "framer-motion";
+import { ArrowRight, BrainCircuit, Check, ChevronDown, Clock3, FileText, Play, Quote, Sparkles, Video, Zap } from "lucide-react";
+import { FiGithub, FiLinkedin, FiTwitter } from "react-icons/fi";
+import Button from "../components/Common/Button.jsx";
+import Card from "../components/Common/Card.jsx";
 
 export default function Home() {
   const nav = useNavigate();
+  const location = useLocation();
   const user = getUser();
 
   useEffect(() => {
@@ -19,27 +19,64 @@ export default function Home() {
     }
   }, [user, nav]);
 
+  useEffect(() => {
+    const target = location.hash.replace(/^#/, '');
+    if (!target) return;
+
+    let frame = requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.getElementById(target)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [location.hash]);
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="landing-page min-h-screen overflow-hidden bg-white text-gray-900">
       <Navbar />
+      <main>
+        <section id="home" className="relative mx-auto max-w-[1440px] px-5 pb-24 pt-24 text-center md:px-10 md:pb-36 md:pt-36">
+          <div className="pointer-events-none absolute inset-0 -z-10 opacity-50 [background-image:linear-gradient(rgba(255,255,255,.07)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.07)_1px,transparent_1px)] [background-size:64px_64px] [mask-image:linear-gradient(to_bottom,black,transparent_85%)]" />
+          <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .6 }} className="mx-auto max-w-5xl">
+            <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-violet-300/20 bg-violet-400/10 px-4 py-2 text-xs font-semibold text-violet-200"><Sparkles size={14} /> The intelligent meeting workspace</div>
+            <h1 className="text-5xl font-semibold leading-[.98] tracking-[-0.065em] md:text-8xl">Meetings, <span className="bg-gradient-to-r from-violet-300 via-fuchsia-300 to-white bg-clip-text text-transparent">made useful.</span></h1>
+            <p className="mx-auto mt-8 max-w-2xl text-base leading-7 text-gray-600 md:text-xl">NexaCall turns live conversations into clear decisions, searchable knowledge, and action your team can move on.</p>
+            <div className="mt-10 flex flex-col justify-center gap-3 sm:flex-row"><Button size="lg" onClick={() => nav('/signup')}>Start free <ArrowRight size={17} /></Button><Button variant="secondary" size="lg"><Play size={16} /> Book a demo</Button></div>
+            <p className="mt-5 text-xs text-gray-600">No credit card required · Set up in under a minute</p>
+          </motion.div>
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .2, duration: .7 }} className="mx-auto mt-20 max-w-6xl rounded-[24px] border border-white/10 bg-[#111113] p-2 shadow-[0_30px_100px_rgba(0,0,0,.45)] md:mt-28 md:p-3">
+            <div className="overflow-hidden rounded-[18px] border border-white/10 bg-[#09090b] text-left"><div className="flex items-center gap-2 border-b border-white/10 px-4 py-3"><span className="h-2.5 w-2.5 rounded-full bg-red-400/70" /><span className="h-2.5 w-2.5 rounded-full bg-amber-400/70" /><span className="h-2.5 w-2.5 rounded-full bg-emerald-400/70" /><span className="ml-4 text-xs text-zinc-500">NexaCall / product sync</span></div><div className="grid min-h-[300px] md:grid-cols-[1.4fr_.6fr]"><div className="relative flex items-center justify-center border-b border-white/10 bg-gradient-to-br from-violet-400/10 via-transparent to-transparent p-8 md:border-b-0 md:border-r"><div className="absolute left-5 top-5 flex items-center gap-2 rounded-full bg-red-400/10 px-3 py-1.5 text-[11px] text-red-300"><span className="h-1.5 w-1.5 animate-pulse rounded-full bg-red-400" /> Recording</div><div className="grid w-full max-w-lg grid-cols-2 gap-3"><div className="flex aspect-video items-end rounded-[14px] border border-white/10 bg-gradient-to-br from-zinc-700 to-zinc-900 p-3 text-xs text-zinc-400">You · speaking</div><div className="flex aspect-video items-end rounded-[14px] border border-white/10 bg-gradient-to-br from-violet-950 to-zinc-900 p-3 text-xs text-zinc-400">Alex · product</div></div></div><div className="p-6"><div className="mb-6 flex items-center gap-2 text-sm font-medium"><BrainCircuit size={16} className="text-violet-300" /> Live AI notes</div><div className="space-y-5 text-sm"><div><p className="mb-2 text-xs text-zinc-500">Key moment</p><p className="text-zinc-200">Launch scope confirmed for Thursday.</p></div><div><p className="mb-2 text-xs text-zinc-500">Action item</p><p className="text-zinc-200">Alex to share the final brief.</p></div><div className="rounded-[12px] bg-emerald-400/10 p-3 text-xs text-emerald-300">Summary ready after the call</div></div></div></div></div>
+          </motion.div>
+        </section>
 
-      {/* Hero Section */}
-      <HeroSection />
+        <section className="border-y border-white/10 py-10"><div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-14 gap-y-6 px-5 text-sm font-semibold tracking-tight text-zinc-500"><span>Trusted by focused teams</span><span>northstar</span><span>Arcadia</span><span>vertex</span><span>orbit</span><span>FIELDNOTE</span></div></section>
 
-      {/* Features Section */}
-      <FeaturesSection />
+        <section id="features" className="mx-auto max-w-6xl px-5 py-28 md:py-40"><div className="max-w-2xl"><p className="text-xs font-semibold uppercase tracking-[.2em] text-violet-300">One intelligent layer</p><h2 className="mt-5 text-4xl font-semibold tracking-[-.05em] md:text-6xl">The meeting is only the beginning.</h2><p className="mt-6 text-lg leading-8 text-gray-600">NexaCall gives every conversation a memory, a structure, and a next step.</p></div><div className="mt-16 grid gap-4 md:grid-cols-3"><Feature icon={<Video />} title="Meet without friction" text="Instant rooms, reliable video, and the controls your team expects." /><Feature icon={<BrainCircuit />} title="Understand automatically" text="Transcripts, decisions, and action items appear as you talk." /><Feature icon={<Zap />} title="Move work forward" text="Turn the outcome of a meeting into momentum for the whole team." /></div></section>
 
-      {/* How It Works */}
-      <HowItWorks />
+        <section id="solutions" className="border-y border-white/10 bg-[#0d0d0f] py-28 md:py-40"><div className="mx-auto grid max-w-6xl gap-16 px-5 lg:grid-cols-2 lg:items-center"><div><p className="text-xs font-semibold uppercase tracking-[.2em] text-violet-300">AI meeting workflow</p><h2 className="mt-5 text-4xl font-semibold tracking-[-.05em] md:text-6xl">From conversation to clarity in three moves.</h2><div className="mt-10 space-y-7"><Step n="01" title="Start a room" text="Share one link and bring the right people into the same space." /><Step n="02" title="Stay present" text="NexaCall captures the details while your team focuses on the discussion." /><Step n="03" title="Leave with direction" text="Get a concise recap, decisions, and owners ready to share." /></div></div><Card className="relative overflow-hidden p-3"><div className="rounded-[16px] bg-[#09090b] p-6 md:p-8"><div className="mb-10 flex items-center justify-between text-xs text-zinc-500"><span>AI SUMMARY / 09:42</span><span className="text-emerald-300">Generated</span></div><h3 className="text-2xl font-semibold">Product sync — key outcomes</h3><div className="mt-8 space-y-5"><SummaryLine icon={<Check />} text="Prioritize onboarding flow for v1.4" /><SummaryLine icon={<FileText />} text="Design review scheduled for Friday" /><SummaryLine icon={<Clock3 />} text="Follow-up owned by Maya" /></div><div className="mt-10 border-t border-white/10 pt-5 text-sm leading-6 text-zinc-500">“The team aligned on a smaller launch scope and a clear owner for each decision.”</div></div></Card></div></section>
 
-      {/* Testimonials */}
-      <Testimonials />
+        <section id="pricing" className="mx-auto max-w-6xl px-5 py-28 md:py-40"><div className="text-center"><p className="text-xs font-semibold uppercase tracking-[.2em] text-violet-300">Simple pricing</p><h2 className="mt-5 text-4xl font-semibold tracking-[-.05em] md:text-6xl">Start free. Scale when ready.</h2></div><div className="mx-auto mt-14 grid max-w-4xl gap-4 md:grid-cols-2"><Price title="Starter" price="$0" text="For small teams exploring better meetings." items={['Unlimited meeting rooms', 'AI summaries', '7-day history']} /><Price featured title="Pro" price="$18" text="For teams building a culture of clarity." items={['Everything in Starter', 'Unlimited history', 'Advanced AI insights']} /></div></section>
 
-      {/* CTA Section */}
-      <CTASection />
+        <section id="usecase" className="border-y border-white/10 bg-[#0d0d0f] py-28 md:py-36"><div className="mx-auto max-w-6xl px-5"><div className="flex flex-col justify-between gap-6 md:flex-row md:items-end"><div><p className="text-xs font-semibold uppercase tracking-[.2em] text-violet-300">Made for momentum</p><h2 className="mt-5 text-4xl font-semibold tracking-[-.05em] md:text-6xl">A better default for every team.</h2></div><p className="max-w-sm text-sm leading-6 text-gray-600">From first idea to final decision, keep the context close to the work.</p></div><div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"><UseCase title="Product" text="Align on launches and decisions without losing the why." /><UseCase title="Sales" text="Turn every customer call into a sharper follow-up." /><UseCase title="Engineering" text="Keep technical discussions clear and searchable." /><UseCase title="Remote teams" text="Create presence and continuity across every timezone." /></div></div></section>
 
-      {/* Footer */}
-      <Footer />
+        <section id="blog" className="mx-auto max-w-6xl px-5 py-28 md:py-36"><div className="flex items-end justify-between"><div><p className="text-xs font-semibold uppercase tracking-[.2em] text-violet-300">From the newsroom</p><h2 className="mt-5 text-4xl font-semibold tracking-[-.05em] md:text-5xl">Latest thinking.</h2></div><a href="#blog" className="hidden items-center gap-2 text-sm text-violet-300 sm:flex">View all <ArrowRight size={15} /></a></div><div className="mt-12 grid gap-4 md:grid-cols-3"><Article tag="Productivity" title="The new operating system for team conversations" /><Article tag="AI at work" title="Why summaries are just the start of meeting intelligence" /><Article tag="NexaCall" title="Designing software that gives teams their time back" /></div></section>
+
+        <section className="mx-auto max-w-3xl px-5 pb-28 md:pb-36"><div className="text-center"><p className="text-xs font-semibold uppercase tracking-[.2em] text-violet-300">Questions, answered</p><h2 className="mt-5 text-4xl font-semibold tracking-[-.05em] md:text-5xl">Good to know.</h2></div><div className="mt-12 divide-y divide-white/10 border-y border-white/10">{['Can I try NexaCall for free?', 'Does NexaCall record and transcribe meetings?', 'How does the AI summary work?', 'Can I invite people outside my team?'].map((question) => <details key={question} className="group py-5"><summary className="flex cursor-pointer list-none items-center justify-between text-sm font-medium text-zinc-200">{question}<ChevronDown size={17} className="text-zinc-500 transition-transform group-open:rotate-180" /></summary><p className="max-w-2xl pt-3 text-sm leading-6 text-zinc-500">Yes. NexaCall is designed to be easy to start, transparent to use, and flexible enough for every team workflow.</p></details>)}</div></section>
+
+        <section id="about" className="border-y border-white/10 bg-gradient-to-b from-violet-400/[.08] to-transparent py-28 text-center md:py-40"><div className="mx-auto max-w-3xl px-5"><Quote className="mx-auto mb-8 text-violet-300" size={30} /><p className="text-3xl font-medium leading-tight tracking-[-.035em] md:text-5xl">“NexaCall gives our team the rarest thing in a fast-moving company: shared context.”</p><p className="mt-8 text-sm text-zinc-500">Sarah Chen · VP Product, Northstar</p></div></section>
+
+        <section id="contact" className="mx-auto max-w-6xl px-5 py-28 md:py-40"><div className="rounded-[24px] border border-white/10 bg-[#111113] p-8 md:p-14"><div className="grid gap-12 lg:grid-cols-[1fr_auto] lg:items-center"><div><p className="text-xs font-semibold uppercase tracking-[.2em] text-violet-300">Ready when you are</p><h2 className="mt-5 text-4xl font-semibold tracking-[-.05em] md:text-6xl">Give your meetings a memory.</h2><p className="mt-5 max-w-xl text-base leading-7 text-gray-600">Start creating better conversations today. No complicated setup, no credit card, no busywork.</p></div><Button size="lg" onClick={() => nav('/signup')}>Get started <ArrowRight size={17} /></Button></div></div></section>
+      </main>
+      <footer className="border-t border-white/10 px-5 py-12"><div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-[1.5fr_1fr_1fr_1.4fr]"><div><div className="flex items-center gap-2 font-semibold"><span className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-violet-400/15 text-violet-300">N</span>NexaCall</div><p className="mt-4 max-w-xs text-sm leading-6 text-zinc-500">The intelligent workspace for conversations that matter.</p><div className="mt-5 flex gap-3 text-zinc-500"><FiGithub size={17} /><FiTwitter size={17} /><FiLinkedin size={17} /></div></div><FooterCol title="Product" items={['Features', 'Solutions', 'Pricing']} /><FooterCol title="Company" items={['About', 'Blog', 'Contact']} /><div><p className="text-sm font-semibold">Stay in the loop</p><p className="mt-3 text-sm text-zinc-500">Product notes, not inbox noise.</p><div className="mt-4 flex rounded-[12px] border border-white/10 bg-white/[.03] p-1"><input className="min-w-0 flex-1 border-0 bg-transparent px-3 py-2 text-sm outline-none" placeholder="you@company.com" /><button className="rounded-[9px] bg-violet-500 px-3 text-xs font-semibold text-white">Join</button></div></div></div><div className="mx-auto mt-12 max-w-6xl border-t border-white/10 pt-6 text-xs text-zinc-600">© 2026 NexaCall. Built for better work.</div></footer>
     </div>
   );
 }
+
+function Feature({ icon, title, text }) { return <motion.div whileHover={{ y: -4 }} className="nc-card p-7"><div className="mb-12 flex h-11 w-11 items-center justify-center rounded-[14px] bg-violet-400/10 text-violet-300">{icon}</div><h3 className="text-xl font-semibold tracking-tight">{title}</h3><p className="mt-3 text-sm leading-6 text-gray-600">{text}</p></motion.div>; }
+function Step({ n, title, text }) { return <div className="flex gap-5"><span className="text-xs font-semibold text-violet-300">{n}</span><div><h3 className="font-semibold">{title}</h3><p className="mt-1 text-sm leading-6 text-gray-600">{text}</p></div></div>; }
+function SummaryLine({ icon, text }) { return <div className="flex items-center gap-3 rounded-[12px] border border-white/10 bg-white/[.03] p-3 text-sm"><span className="text-violet-300">{icon}</span>{text}</div>; }
+function Price({ title, price, text, items, featured }) { return <Card className={featured ? 'border-violet-300/30 bg-violet-400/[.08]' : ''}><div className="flex items-start justify-between"><div><h3 className="text-xl font-semibold">{title}</h3><p className="mt-2 text-sm text-gray-600">{text}</p></div>{featured && <span className="rounded-full bg-violet-400/15 px-3 py-1 text-xs text-violet-200">Popular</span>}</div><div className="mt-8 text-4xl font-semibold">{price}<span className="text-sm font-normal text-zinc-500"> / month</span></div><div className="mt-8 space-y-3 border-t border-white/10 pt-6">{items.map(item => <div key={item} className="flex items-center gap-2 text-sm text-gray-600"><Check size={15} className="text-emerald-300" />{item}</div>)}</div><Button variant={featured ? 'primary' : 'secondary'} fullWidth className="mt-8">Choose {title}</Button></Card>; }
+function FooterCol({ title, items }) { return <div><p className="text-sm font-semibold">{title}</p><div className="mt-4 space-y-3">{items.map(item => <a key={item} href={`#${item.toLowerCase()}`} className="block text-sm text-zinc-500 hover:text-zinc-200">{item}</a>)}</div></div>; }
+function UseCase({ title, text }) { return <div className="nc-card p-6"><div className="mb-12 h-2 w-2 rounded-full bg-violet-300 shadow-[0_0_18px_rgba(167,139,250,.8)]" /><h3 className="text-lg font-semibold">{title}</h3><p className="mt-2 text-sm leading-6 text-gray-600">{text}</p></div>; }
+function Article({ tag, title }) { return <a href="#blog" className="group nc-card block p-6"><p className="text-xs font-semibold uppercase tracking-[.15em] text-violet-300">{tag}</p><h3 className="mt-16 text-xl font-semibold leading-tight tracking-tight transition group-hover:text-violet-200">{title}</h3><span className="mt-8 flex items-center gap-2 text-sm text-zinc-500">Read article <ArrowRight size={15} className="transition group-hover:translate-x-1" /></span></a>; }
